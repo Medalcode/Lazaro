@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lazaro | Android Backend Portal</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header class="fade-in">
+        <div class="logo-area">
+          <h1>LAZARO</h1>
+          <span>Universal Android Engine</span>
+        </div>
+        <div class="status-badge">
+          <div class="status-dot"></div>
+          <span>Server Online</span>
+        </div>
+      </header>
+
+      <div class="grid">
+        <!-- CPU Metric -->
+        <div class="card fade-in" style="animation-delay: 0.1s">
+          <div class="card-header">
+            <span class="card-title">Carga de CPU</span>
+            <div class="card-icon">⚡</div>
+          </div>
+          <div class="card-value" id="cpu-val">--%</div>
+          <div class="progress-container">
+            <div class="progress-bar" id="cpu-bar" style="width: 0%"></div>
+          </div>
+          <div class="card-footer">Octa-Core ARM Processor</div>
+        </div>
+
+        <!-- RAM Metric -->
+        <div class="card fade-in" style="animation-delay: 0.2s">
+          <div class="card-header">
+            <span class="card-title">Memoria RAM</span>
+            <div class="card-icon">🧠</div>
+          </div>
+          <div class="card-value" id="ram-val">--%</div>
+          <div class="progress-container">
+            <div class="progress-bar" id="ram-bar" style="width: 0%"></div>
+          </div>
+          <div class="card-footer" id="ram-footer">Calculando...</div>
+        </div>
+
+        <!-- Battery -->
+        <div class="card fade-in" style="animation-delay: 0.3s">
+          <div class="card-header">
+            <span class="card-title">Batería & Energía</span>
+            <div class="card-icon">🔋</div>
+          </div>
+          <div class="card-value" id="bat-val">--%</div>
+          <div
+            id="bat-status"
+            style="font-size: 0.85rem; color: var(--success)"
+          >
+            Estado: Conectado
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- Services Status -->
+        <div
+          class="card fade-in"
+          style="animation-delay: 0.4s"
+          style="grid-column: span 2"
+        >
+          <div class="card-header">
+            <span class="card-title">Estado de Servicios</span>
+            <div class="card-icon">🛰️</div>
+          </div>
+          <div class="service-list">
+            <div class="service-item">
+              <div class="service-info">
+                <span class="tag tag-node">Node.js</span>
+                <strong>Lazaro Core API</strong>
+              </div>
+              <span style="color: var(--success)">Activo :3000</span>
+            </div>
+            <div class="service-item">
+              <div class="service-info">
+                <span class="tag tag-py">Python</span>
+                <strong>Data Processing Service</strong>
+              </div>
+              <span id="py-status" style="color: var(--text-dim)"
+                >Verificando...</span
+              >
+            </div>
+            <div class="service-item">
+              <div class="service-info">
+                <span
+                  class="tag"
+                  style="background: rgba(247, 148, 29, 0.2); color: #f7941d"
+                  >Bot</span
+                >
+                <strong>ARGOS Trading Bot</strong>
+              </div>
+              <span id="argos-status" style="color: var(--text-dim)"
+                >Externo :8000</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal Output / Quick Logs -->
+        <div class="card fade-in" style="animation-delay: 0.5s">
+          <div class="card-header">
+            <span class="card-title">Actividad Reciente</span>
+          </div>
+          <div
+            id="logs"
+            style="
+              font-family: monospace;
+              font-size: 0.75rem;
+              color: var(--text-dim);
+              height: 150px;
+              overflow-y: auto;
+            "
+          >
+            <div>[SYS] Dashboard inicializado...</div>
+            <div>[SYS] Conectando a servicios locales...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+  </body>
+</html>
