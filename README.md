@@ -9,7 +9,7 @@
 - **📊 Premium Dashboard:** Panel visual con estética Glassmorphism para monitorear CPU, RAM y Batería en tiempo real (`http://localhost:3000`).
 - **🤖 Telegram Guardian:** Bot integrado (`@Argos_medalcode_bot`) con alertas proactivas de energía y salud de servicios.
 - **🛡️ Backup System:** Scripts automáticos para respaldo de bases de datos y configuraciones.
-- **📈 ARGOS Integration:** Monitoreo nativo para el bot de trading ARGOS.
+- **📈 ARGOS Orchestration:** Gestión y ejecución nativa del bot de trading ARGOS vía PM2.
 
 ---
 
@@ -25,23 +25,24 @@ chmod +x install.sh && ./install.sh
 
 ## 🏗️ Arquitectura del Sistema
 
-El proyecto es modular y convive perfectamente con otros proyectos como ARGOS:
+El proyecto actúa como un sistema operativo de servicios para tu Android:
 
 - **🟢 Node.js Core (`:3000`):** Motor principal, Dashboard y API de Telemetría.
 - **🐍 Python Data (`:5000`):** Procesamiento de datos y scripts de análisis.
 - **🤖 Telegram Bridge:** Alertas al celular sobre el estado del hardware y ARGOS.
-- **⚙️ PM2 Orchestrator:** Gestión inteligente de procesos y auto-reinicio.
+- **⚙️ PM2 Orchestrator:** Mantiene vivos a Lazaro y a ARGOS simultáneamente.
 
 ---
 
 ## 📂 Servicios Incluidos
 
-| Servicio           | Puerto | Descripción                   |
-| :----------------- | :----- | :---------------------------- |
-| **Dashboard**      | 3000   | Interfaz web de monitoreo     |
-| **Python Service** | 5000   | API de procesamiento          |
-| **ARGOS Bot**      | 8000   | Integración visual de trading |
-| **Telegram Bot**   | -      | Alertas proactivas al móvil   |
+| Servicio           | Puerto | Descripción                  |
+| :----------------- | :----- | :--------------------------- |
+| **Dashboard**      | 3000   | Interfaz web de monitoreo    |
+| **Python Service** | 5000   | API de procesamiento         |
+| **ARGOS Bot**      | -      | Proceso de trading (Backend) |
+| **ARGOS Dash**     | 8000   | Interfaz visual de trading   |
+| **Telegram Bot**   | -      | Alertas proactivas al móvil  |
 
 ---
 
@@ -52,7 +53,7 @@ El proyecto es modular y convive perfectamente con otros proyectos como ARGOS:
 El bot integrado te avisará si:
 
 1. La batería baja del **15%**.
-2. El bot **ARGOS** se detiene.
+2. El bot **ARGOS** se detiene o su API deja de responder.
 3. El servidor sufre una caída de servicios.
 
 ### Sistema de Backups
@@ -73,4 +74,4 @@ Ejecuta manualmente o vía cron:
 
 ---
 
-> **Nota:** Diseñado para Android 7.0+ con Termux. No interfiere con el uso normal del dispositivo.
+> **Nota:** Diseñado para Android 7.0+ con Termux.
