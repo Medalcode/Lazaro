@@ -3,12 +3,34 @@ const os = require('os');
 const osUtils = require('os-utils');
 const axios = require('axios');
 const path = require('path');
+const { redisClient } = require('../shared');
 
 const app = express();
 const port = 3000;
 
 // Serve Static Files
 app.use(express.static(path.join(__dirname, 'public')));
+
+// --- MONITOR SYSTEM (NEW) ---
+const publisher = redisClient.getPublisher();
+const MONITOR_INTERVAL = 60000;
+let argosPreviouslyDown = false;
+
+setInterval(async () => {
+    try {
+        await axios.get('http://localhost:8000/api/history', { timeout: 2000 });
+        if (argosPreviouslyDown) {
+            publisher.publish('alerts:critical', JSON.stringify({ msg: 'ARGOS Service Restored ✅' }));
+            argosPreviouslyDown = false;
+        }
+    } catch (e) {
+        if (!argosPreviouslyDown) { // Only alert once per downtime
+            console.error('Monitor: Argos is down');
+            publisher.publish('alerts:critical', JSON.stringify({ msg: 'ARGOS Service Unreachable ❌\nCheck PM2 logs.' }));
+            argosPreviouslyDown = true;
+        }
+    }
+}, MONITOR_INTERVAL);
 
 // API for Dashboard Stats
 app.get('/api/stats', (req, res) => {

@@ -3,6 +3,7 @@ const axios = require('axios');
 const { exec } = require('child_process');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
+const { redisClient } = require('../../shared');
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 
@@ -43,31 +44,42 @@ function getBatteryInfo() {
     });
 }
 
-// Sistema de Alertas Proactivas
-async function checkSystemHealth() {
-    if (!ALERT_CONFIG.chatId) return;
+// --- SCALABLE ARCHITECTURE: EVENT DRIVEN ---
+const subscriber = redisClient.getSubscriber();
 
-    try {
-        // 1. Check Batería
-        const bat = await getBatteryInfo();
-        if (bat && bat.percentage < ALERT_CONFIG.batteryThreshold && bat.status !== 'CHARGING') {
-            bot.telegram.sendMessage(ALERT_CONFIG.chatId, `⚠️ *ALERTA DE ENERGÍA*\nBatería crítica: ${bat.percentage}%\nEl servidor podría apagarse pronto.`);
-        }
+subscriber.subscribe('alerts:critical', (err, count) => {
+    if (err) {
+        console.error('❌ Redis Subscribe Error:', err);
+    } else {
+        console.log('✅ Listening to alerts:critical');
+    }
+});
 
-        // 2. Check ARGOS (Puerto 8000)
+subscriber.on('message', (channel, message) => {
+    if (channel === 'alerts:critical' && ALERT_CONFIG.chatId) {
         try {
-            await axios.get('http://localhost:8000/api/history', { timeout: 2000 });
+            const data = JSON.parse(message);
+            const alertText = data.text || data.msg || JSON.stringify(data);
+            bot.telegram.sendMessage(ALERT_CONFIG.chatId, `🚨 *ALERTA CRÍTICA*\n\n${alertText}`);
         } catch (e) {
-            bot.telegram.sendMessage(ALERT_CONFIG.chatId, `🚨 *ALERTA CRÍTICA*\nEl bot de trading ARGOS no responde en el puerto 8000.\nRevisa PM2 inmediatamente.`);
+            console.error('Error parsing alert:', e);
+            bot.telegram.sendMessage(ALERT_CONFIG.chatId, `🚨 *ALERTA RAW*\n${message}`);
         }
+    }
+});
 
-    } catch (err) {
-        console.error('Error en health check:', err.message);
+// Legacy Local Battery Check (To be moved to Hardware Service)
+async function checkLocalBattery() {
+    if (!ALERT_CONFIG.chatId) return;
+    const bat = await getBatteryInfo();
+    if (bat && bat.percentage < ALERT_CONFIG.batteryThreshold && bat.status !== 'CHARGING') {
+         // Publish to oneself? Or just send.
+         bot.telegram.sendMessage(ALERT_CONFIG.chatId, `⚠️ *ALERTA DE ENERGÍA*\nBatería crítica: ${bat.percentage}%\nEl servidor podría apagarse pronto.`);
     }
 }
 
-// Iniciar monitoreo cada minuto
-setInterval(checkSystemHealth, ALERT_CONFIG.checkInterval);
+// Check Battery every minute (Local Worker)
+setInterval(checkLocalBattery, ALERT_CONFIG.checkInterval);
 
 // --- COMANDOS ---
 

@@ -23,12 +23,13 @@ chmod +x install.sh && ./install.sh
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+## 🏗️ Arquitectura Escalable (Lazaro Network)
 
-El proyecto actúa como un sistema operativo de servicios para tu Android:
+El proyecto evoluciona hacia una arquitectura de microservicios orientada a eventos:
 
-- **🟢 Node.js Core (`:3000`):** Motor principal, Dashboard y API de Telemetría.
-- **🐍 Python Data (`:5000`):** Procesamiento de datos y scripts de análisis.
+- **🧠 Event Bus (Redis):** Sistema nervioso central que coordina mensajes entre servicios.
+- **🟢 Node.js Telemetry (`:3000`):** Recolector de métricas y Monitor de Sistema.
+- **🐍 Python Data (`:5000`):** Servicio de procesamiento independiente.
 - **🤖 Telegram Bridge:** Alertas al celular sobre el estado del hardware y ARGOS.
 - **⚙️ PM2 Orchestrator:** Mantiene vivos a Lazaro y a ARGOS simultáneamente.
 
@@ -75,3 +76,9 @@ Ejecuta manualmente o vía cron:
 ---
 
 > **Nota:** Diseñado para Android 7.0+ con Termux.
+
+---
+
+## 📚 Documentación y Seguimiento
+
+Para ver el historial detallado de cambios y la hoja de ruta futura, consulta la [Bitácora de Desarrollo](BITACORA.md).
