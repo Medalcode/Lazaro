@@ -1,8 +1,8 @@
 # Lazaro
 
-**Plataforma de microservicios event-driven corriendo sobre Android vía Termux.**
+**Plataforma de microservicios event-driven para userland Debian (systemd).**
 
-Convierte un teléfono Android viejo en un servidor backend ligero con event bus basado en Redis, monitoreo de sistema y alertas por Telegram.
+Ejecuta Lazaro en un entorno Debian ligero (Debian, Ubuntu o UserLAnd Debian). Provee un backend ligero con event bus basado en Redis, monitoreo y alertas por Telegram.
 
 [English version](README.md)
 
@@ -19,7 +19,7 @@ Tienes:
 
 Lazaro provee:
 
-- **Orquestación de microservicios** vía PM2 en Android
+- **Orquestación de microservicios** vía unidades `systemd` (recomendado) o PM2 (opcional)
 - **Event bus** usando Redis Pub/Sub para comunicación entre servicios
 - **Monitoreo de sistema** (CPU, RAM, batería, temperatura)
 - **Alertas por Telegram** para eventos críticos
@@ -115,18 +115,17 @@ Agrega servicios personalizados dejando un script en `services/` y registrándol
 
 ## Inicio Rápido
 
-### Prerequisitos
+### Prerrequisitos
 
-- Dispositivo Android 7.0+
-- [Termux](https://f-droid.org/en/packages/com.termux/) instalado
-- Conexión WiFi estable
-- Dispositivo conectado a cargador (recomendado)
+- Entorno Debian/Ubuntu o UserLAnd Debian
+- Acceso `sudo` para instalar paquetes y habilitar servicios
+- Conexión de red estable
 
-### Instalación
+### Instalación (Debian/Ubuntu)
 
 ```bash
-# 1. Actualizar Termux
-pkg update && pkg upgrade -y
+# 1. Actualizar sistema
+sudo apt update && sudo apt upgrade -y
 
 # 2. Clonar repositorio
 git clone https://github.com/tuusuario/Lazaro.git
@@ -141,34 +140,19 @@ cp services/telegram-bot/.env.example services/telegram-bot/.env
 nano services/telegram-bot/.env
 # Agregar tu TELEGRAM_BOT_TOKEN de @BotFather
 
-# 5. Iniciar servicios
-pm2 start ecosystem.config.js
+# 5. Habilitar y arrancar servicios systemd (ejemplo)
+# Después de crear el usuario 'lazaro' y copiar las unidades a /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now lazaro-api-node.service lazaro-api-python.service lazaro-telegram-bot.service
 
 # 6. Verificar
-pm2 status
+sudo systemctl status lazaro-api-node.service
 curl http://localhost:3000/api/stats
 ```
 
-### Configuración de Android (Crítico)
-
-Para evitar que Android mate los servicios:
-
-1. **Desactivar optimización de batería**:
-   - Ajustes → Batería → Optimización de batería
-   - Buscar "Termux" → Seleccionar "No optimizar"
-
-2. **Permitir ejecución en segundo plano**:
-   - Ajustes → Aplicaciones → Termux → Batería
-   - Seleccionar "Sin restricciones"
-
-3. **Habilitar wake lock** (en Termux):
-
-   ```bash
-   termux-wake-lock
-   ```
-
-4. **Desactivar "Batería adaptable"** (si existe):
-   - Ajustes → Batería → Batería adaptable → Desactivar
+Notas:
+- `systemd` es el gestor de procesos recomendado en Debian. PM2 es opcional.
+- Si prefiere PM2, instale con `sudo npm install -g pm2` y ejecute `pm2 start ecosystem.config.js`.
 
 ---
 

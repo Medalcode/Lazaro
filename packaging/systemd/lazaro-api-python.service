@@ -1,0 +1,17 @@
+[Unit]
+Description=Lazaro Python Service
+After=network.target
+
+[Service]
+User=lazaro
+Group=lazaro
+WorkingDirectory=/home/lazaro/Lazaro/api-python
+Environment=LAZARO_HOME=/home/lazaro/Lazaro
+ExecStart=/usr/bin/python3 /home/lazaro/Lazaro/api-python/app.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

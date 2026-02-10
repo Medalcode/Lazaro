@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/usr/bin/env bash
 
 # Colores para la salida
 GREEN='\033[0;32m'
@@ -33,13 +33,21 @@ if [ $FORBIDDEN -eq 1 ]; then
 fi
 
 # 1. Actualizar sistema y paquetes base
-echo -e "${GREEN}[1/5] Actualizando paquetes del sistema...${NC}"
-pkg update -y && pkg upgrade -y
-pkg install -y nodejs python git mariadb postgresql redis
+echo -e "${GREEN}[1/5] Actualizando paquetes del sistema (Debian/Ubuntu)...${NC}"
+if command -v apt >/dev/null 2>&1; then
+    sudo apt update && sudo apt upgrade -y
+    sudo apt install -y nodejs npm python3 python3-pip git mariadb-server postgresql redis-server
+else
+    echo -e "${RED}No se encontró 'apt'. Este script está preparado para Debian/Ubuntu. Ejecuta las instalaciones manualmente.${NC}"
+fi
 
 # 2. Instalar gestor de procesos PM2
-echo -e "${GREEN}[2/5] Instalando PM2 globalmente...${NC}"
-npm install -g pm2
+echo -e "${GREEN}[2/5] Instalando PM2 globalmente (opcional)...${NC}"
+if command -v npm >/dev/null 2>&1; then
+    sudo npm install -g pm2
+else
+    echo -e "${RED}npm no encontrado; omitiendo instalación de PM2.${NC}"
+fi
 
 # 3. Configurar servicio Node.js
 echo -e "${GREEN}[3/5] Configurando servicio Node.js...${NC}"
@@ -51,19 +59,23 @@ fi
 
 # 4. Configurar servicio Python
 echo -e "${GREEN}[4/5] Configurando servicio Python...${NC}"
-pip install flask
+if command -v pip3 >/dev/null 2>&1; then
+    sudo pip3 install -r requirements.txt 2>/dev/null || sudo pip3 install flask
+else
+    sudo pip install flask || true
+fi
 
 # 5. Configurar base de datos MariaDB (opcional/inicial)
 echo -e "${GREEN}[5/5] Inicializando servicios de base de datos...${NC}"
 # Iniciar MariaDB si no está corriendo
-if ! pgrep -x "mariadbd" > /dev/null
-then
-    mysql_install_db
-    nohup mysqld > /dev/null 2>&1 &
-    sleep 2
-    mysql -e "CREATE DATABASE IF NOT EXISTS lazaro_db;"
+if systemctl >/dev/null 2>&1; then
+    sudo systemctl enable --now mariadb || sudo systemctl enable --now mysql || true
+    # Crear base de datos si es posible
+    if command -v mysql >/dev/null 2>&1; then
+        mysql -e "CREATE DATABASE IF NOT EXISTS lazaro_db;" || true
+    fi
 fi
 
 echo -e "${BLUE}--- Instalación Completada ---${NC}"
-echo -e "Para iniciar el servidor ejecuta: ${GREEN}pm2 start ecosystem.config.js${NC}"
-echo -e "Para ver el estado ejecuta: ${GREEN}pm2 status${NC}"
+echo -e "Para iniciar con PM2 (opcional): ${GREEN}pm2 start ecosystem.config.js${NC}"
+echo -e "Para integración con systemd: crear unidades en /etc/systemd/system/ y luego: ${GREEN}sudo systemctl enable --now <servicio>${NC}"

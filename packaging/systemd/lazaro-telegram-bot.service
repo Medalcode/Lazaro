@@ -1,0 +1,17 @@
+[Unit]
+Description=Lazaro Telegram Bot
+After=network.target
+
+[Service]
+User=lazaro
+Group=lazaro
+WorkingDirectory=/home/lazaro/Lazaro/services/telegram-bot
+Environment=LAZARO_HOME=/home/lazaro/Lazaro
+ExecStart=/usr/bin/node /home/lazaro/Lazaro/services/telegram-bot/bot.js
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

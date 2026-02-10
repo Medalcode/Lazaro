@@ -44,12 +44,11 @@
 - [x] Logs estructurados (JSON)
 - [x] Dashboard de métricas en tiempo real
 
-### 🤖 Android-Specific
+### ⚙️ Platform-Specific (deprecated Android-only items removed)
 
-- [x] Análisis de Doze Mode, thermal throttling, OOM killer
-- [x] Mitigaciones para process kill y battery drain
-- [x] Watchdog scripts para auto-recovery
-- [x] Termux:Boot configuration
+- [x] Análisis de Doze Mode, thermal throttling, OOM killer (documented for historical reference)
+- [x] Mitigaciones para process kill y battery drain (migrated guidance to systemd watchdogs)
+- [x] Watchdog scripts for auto-recovery (recommend using `systemd` timers/Watchdog)
 
 ---
 
@@ -113,7 +112,7 @@
 
 ### Complejidad Innecesaria
 
-- ❌ **Docker**: No viable en Termux, PM2 es suficiente
+-- ❌ **Docker**: Not recommended for lightweight userland deployments; PM2 is optional, `systemd` preferred
 - ❌ **Kafka/RabbitMQ**: Demasiado pesado para Android (Redis es suficiente)
 - ❌ **Distributed Tracing**: Overkill para 3-5 servicios
 - ❌ **APM Tools**: New Relic/Datadog consumen demasiada RAM

@@ -1,0 +1,17 @@
+[Unit]
+Description=Lazaro Node API
+After=network.target
+
+[Service]
+User=lazaro
+Group=lazaro
+WorkingDirectory=/home/lazaro/Lazaro/api-node
+Environment=LAZARO_HOME=/home/lazaro/Lazaro
+ExecStart=/usr/bin/node index.js
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

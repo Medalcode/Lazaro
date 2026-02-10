@@ -32,8 +32,8 @@ Lazaro is built on three principles:
 ### Deployment Context
 
 ```
-Environment:  Android 7.0+ via Termux
-Resources:    1-4GB RAM, 4-8 CPU cores (throttled)
+Environment:  Debian-based userland (Debian/Ubuntu, UserLAnd)
+Resources:    1-4GB RAM, 1-4 CPU cores (resource-constrained)
 Network:      LAN only (no public exposure)
 Uptime:       Best-effort (not 99.9%)
 ```
@@ -113,7 +113,7 @@ appendonly no
 }
 ```
 
-**Trade-off**: PM2 is not Kubernetes. No service discovery, no health checks, no rolling deploys. But it's the only viable option in Termux.
+**Trade-off**: PM2 is not Kubernetes. No service discovery, no health checks, no rolling deploys. On Debian `systemd` is the preferred supervisor; PM2 remains an optional, polyglot process manager for environments where `systemd` is not available.
 
 ---
 

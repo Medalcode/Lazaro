@@ -27,19 +27,31 @@ bot.start((ctx) => {
     ctx.reply('🚀 Lazaro & Argos Bridge Activo\n\nLas alertas de sistema están configuradas:\n- Batería < 15%\n- Caída de Servicios\n\nComandos:\n/status - Estado del Servidor\n/argos - Resumen de Trading');
 });
 
-// Función para obtener info de batería en Termux
+// Función para obtener info de batería: intenta termux, luego acpi, si no disponible devuelve null
 function getBatteryInfo() {
     return new Promise((resolve) => {
+        // Intentar comando Termux primero (si existe)
         exec('termux-battery-status', (error, stdout) => {
-            if (error) {
-                resolve(null);
-                return;
+            if (!error && stdout) {
+                try {
+                    resolve(JSON.parse(stdout));
+                    return;
+                } catch (e) {
+                    // caerá al siguiente intento
+                }
             }
-            try {
-                resolve(JSON.parse(stdout));
-            } catch (e) {
-                resolve(null);
-            }
+
+            // Intentar comando acpi (común en Linux de escritorio/embedded)
+            exec('acpi -b', (err2, out2) => {
+                if (err2 || !out2) {
+                    resolve(null);
+                    return;
+                }
+                // Ejemplo de salida: "Battery 0: Discharging, 87%, 02:13:44 remaining"
+                const m = out2.match(/([0-9]{1,3})%/);
+                const status = out2.includes('Charging') ? 'CHARGING' : out2.includes('Discharging') ? 'DISCHARGING' : 'UNKNOWN';
+                resolve({ percentage: m ? parseInt(m[1], 10) : null, status });
+            });
         });
     });
 }
